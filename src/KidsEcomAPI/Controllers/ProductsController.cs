@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KidsEcomAPI.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -16,19 +17,28 @@ namespace KidsEcomAPI.Controllers
             _context = context;
         }
         [HttpGet]
-        [Attribuils]
+      
         public IActionResult Get() {
 
             var lstproducts = _context.Products.ToList();
             return Ok(lstproducts);
         
         }
+        [HttpGet("{DanhMuc}")]
+
+        public IActionResult Get(string DanhMuc)
+        {
+
+            var lstproducts = _context.Products.Where(x =>x.DanhMuc  == DanhMuc);
+            return Ok(lstproducts);
+
+        }
         [HttpPost]
         public IActionResult CreateProducts(ProductsModel products) {
             var lstSp = new Products
             {
                 TenSp = products.TenSp,
-                DanhMuc = products.DanhMuc,
+               DanhMuc = products.DanhMuc,
                 GiaSp = products.GiaSp,
                 Img = products.Img,
                 MaSp = products.MaSp,

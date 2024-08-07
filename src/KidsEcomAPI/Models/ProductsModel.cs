@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using KidsEcomAPI.Data;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KidsEcomAPI.Models
 {
@@ -9,11 +11,12 @@ namespace KidsEcomAPI.Models
         public string TenSp { get; set; }
 
         public string MaSp { get; set; }
-
+       
         public string DanhMuc { get; set; }
 
         public int GiaSp { get; set; }
 
         public string Img { get; set; }
+       
     }
 }

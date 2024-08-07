@@ -9,7 +9,7 @@
         }
         public bool CheckKey(string KeyApi)
         {
-            if (string.IsNullOrEmpty(KeyApi)) { 
+            if (string.IsNullOrWhiteSpace(KeyApi)) { 
             return false;
             }
             string? key = _configuration.GetValue<string>(BienSo.ApiKey);

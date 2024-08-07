@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KidsEcomAPI.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20240801020230_Migrations")]
-    partial class Migrations
+    [Migration("20240803030827_migrations")]
+    partial class migrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,24 @@ namespace KidsEcomAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("KidsEcomAPI.Models.ProductsModel", b =>
+            modelBuilder.Entity("KidsEcomAPI.Data.DanhMucSanPhams", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DanhMuc")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DanhMucSanPhams");
+                });
+
+            modelBuilder.Entity("KidsEcomAPI.Data.Products", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

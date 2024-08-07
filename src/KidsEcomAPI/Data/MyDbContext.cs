@@ -8,10 +8,14 @@ namespace KidsEcomAPI.Data
         public MyDbContext(DbContextOptions options):base(options) { }
 
         public DbSet<Products>Products { get; set; }
+        public DbSet<DanhMucSanPhams> DanhMucs { get; set; }
+        public DbSet<Users> Users { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+           
         }
     }
 }

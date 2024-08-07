@@ -13,11 +13,11 @@ namespace KidsEcomAPI.Apikey
         public void OnAuthorization(AuthorizationFilterContext context)
         {
            string? api = context.HttpContext.Request.Headers[BienSo.ApiHeaderName].ToString();
-            if (string.IsNullOrWhiteSpace(api)) {
-                context.Result = new BadRequestResult();
+            if (string.IsNullOrEmpty(api)) {
+                context.Result = new BadRequestResult(); //400
             }
             if (!_check.CheckKey(api)) {
-                context.Result = new UnauthorizedResult();
+                context.Result = new UnauthorizedResult(); //401
             }
         }
     }
