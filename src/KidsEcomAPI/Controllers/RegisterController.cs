@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KidsEcomAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class RegisterController : ControllerBase
     {
@@ -17,10 +18,10 @@ namespace KidsEcomAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(UsersModel acc)
+        public async Task<IActionResult> Register(UsersModel acc)
         {
             
-            if (string.IsNullOrWhiteSpace(acc.UserName) || string.IsNullOrWhiteSpace(acc.PassWord)|| string.IsNullOrWhiteSpace(acc.DiaChi)|| string.IsNullOrWhiteSpace(acc.SoDienThoai))
+            if (string.IsNullOrWhiteSpace(acc.UserName) || string.IsNullOrWhiteSpace(acc.PassWord)|| string.IsNullOrWhiteSpace(acc.DiaChi)|| string.IsNullOrWhiteSpace(acc.SoDienThoai)||string.IsNullOrWhiteSpace(acc.HovaTen))
             {
                 return Ok(new
                 {
@@ -29,7 +30,7 @@ namespace KidsEcomAPI.Controllers
 
                 });
             }
-            var check = _context.Users.Any(x => x.UserName == acc.UserName);
+            var check = await _context.Users.AnyAsync(x => x.UserName == acc.UserName);
             if (check)
             {
                 return Ok(new
@@ -45,13 +46,15 @@ namespace KidsEcomAPI.Controllers
                 PassWord = acc.PassWord,
                 SoDienThoai = acc.SoDienThoai,
                 DiaChi = acc.DiaChi,
-
+                HoVaTen = acc.HovaTen,
+                Email = acc.Email,
+                GioiTinh = acc.GioiTinh
 
 
             };
 
-            _context.Add(newUser);
-            _context.SaveChanges();
+           await _context.AddAsync(newUser);
+           await _context.SaveChangesAsync();
             return Ok(new
             {
                 messege = "Đăng ký thành công",

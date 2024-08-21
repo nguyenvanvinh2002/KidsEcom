@@ -10,6 +10,9 @@ namespace KidsEcomAPI.Data
         public DbSet<Products>Products { get; set; }
         public DbSet<DanhMucSanPhams> DanhMucs { get; set; }
         public DbSet<Users> Users { get; set; }
+        public DbSet<DanhGia> DanhGias { get; set; }
+        public DbSet<Carts> Carts { get; set; }
+        public DbSet<Oders> Oders { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

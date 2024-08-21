@@ -12,6 +12,9 @@ namespace KidsEcomAPI.Models
         public string? SoDienThoai { get; set; }
         public string? Roles { get; set; } = "User";
         public int? Status { get; set; } = 1;
-       
+        public string? HovaTen { get; set; }
+        public string? Email { get; set; }
+        public string? Avatar { get; set; } = "iconavatar.png";
+        public string? GioiTinh { get; set; }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using KidsEcomAPI.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace KidsEcomAPI.Controllers
 {
-    [ApiVersion("1.0")]
+  
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -14,18 +15,19 @@ namespace KidsEcomAPI.Controllers
         {
             _context = context;
         }
+        [ApiVersion("1.0")]
         [HttpGet]
-        public IActionResult GetCategories()
+        public async Task<IActionResult> GetCategories()
         {
-            var categories = _context.DanhMucs.ToList();
+            var categories = await _context.DanhMucs.ToListAsync();
             return Ok(categories);
            
         }
-        [ApiVersion("2.0")]
+        [ApiVersion("1.0")]
         [HttpGet("{DanhMuc}")]
-        public IActionResult GetCategoriesDanhMuc(string DanhMuc)
+        public async Task<IActionResult> GetCategoriesDanhMuc(string DanhMuc)
         {
-            var categories = _context.DanhMucs.SingleOrDefault(x => x.DanhMuc == DanhMuc);
+            var categories = await _context.DanhMucs.SingleOrDefaultAsync(x => x.DanhMuc == DanhMuc);
             return Ok(categories);
 
         }

@@ -1,26 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace KidsEcomAPI.Data
+namespace KidsEcomAPI.Models
 {
-    [Table("Users")]
-    public class Users
+    public class OdersModel
     {
         [Key]
         public int? Id { get; set; }
-   
+        public int? IdSp { get; set; }
         public string? UserName { get; set; }
-
-        public string? PassWord { get; set; }
         public string? DiaChi { get; set; }
         public string? SoDienThoai { get; set; }
-        public string? Roles { get; set; } = "User";
-
         public int? Status { get; set; } = 1;
         public string? HoVaTen { get; set; }
         public string? Email { get; set; }
-        public string? Avatar { get; set; } = "iconavatar.png";
-        public string? GioiTinh { get; set; }
-
+        public string? Size { get; set; }
+        public int? SoLuong { get; set; }
+        public string? TenSp { get; set; }
+        public decimal? GiaSp { get; set; }
+        public decimal? subtotal { get; set; }
+        public DateTime DateTime { get; set; }
     }
 }

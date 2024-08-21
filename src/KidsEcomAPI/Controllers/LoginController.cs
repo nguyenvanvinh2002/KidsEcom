@@ -1,25 +1,35 @@
-﻿using KidsEcomAPI.Data;
+﻿using KidsEcomAPI.Apikey;
+using KidsEcomAPI.Data;
 using KidsEcomAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace KidsEcomAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class LoginController : ControllerBase
     {
         private readonly MyDbContext _context;
-        public LoginController(MyDbContext context)
+        private readonly IConfiguration _configuration;
+        public LoginController(MyDbContext context,IConfiguration configuration)
         {
               _context = context;
+            _configuration = configuration;
+
         }
         [HttpPost]
-        public IActionResult Login(UsersModel acc)
+        public async Task<IActionResult> Login(UsersModel acc)
         {
-
-            var user = _context.Users.SingleOrDefault(x => x.UserName == acc.UserName && x.PassWord == acc.PassWord);
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == acc.UserName && x.PassWord == acc.PassWord);
+            var lst = _context.Carts.Where(x => x.UserName == acc.UserName);
+            var soluong = lst.Count();
             if ( user == null)
             {
                 return Ok(new
@@ -38,20 +48,63 @@ namespace KidsEcomAPI.Controllers
             }
             else
             {
-               
+                var claims = new[]
+                {
+                     new Claim(JwtRegisteredClaimNames.Sub , _configuration["Jwt:Subject"]),
+                new Claim(JwtRegisteredClaimNames.Jti , Guid.NewGuid().ToString()),
+                new Claim("UserId", user.Id.ToString()),
+                new Claim("UserName", user.UserName),
+
+                };
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                var Login = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                var token = new JwtSecurityToken(
+                     _configuration["Jwt:Issuer"],
+                     _configuration["Jwt:Audience"],
+                     claims,
+                     expires: DateTime.UtcNow.AddMinutes(60),
+                     signingCredentials: Login
+                    );
+                string tokenvalue = new JwtSecurityTokenHandler().WriteToken(token);
+
                 return Ok(new
                 {
                     messege = "Đăng nhập thành công",
+                    token = tokenvalue,
                     user.UserName,
                     user.DiaChi,
                     user.SoDienThoai,
                     user.Status,
                     user.Roles,
                     user.Id,
-                    code = 200
+                    user.HoVaTen,
+                    user.Email,
+                    user.GioiTinh,
+                    user.Avatar,
+                    code = 200,
 
 
                 });
+
+                //return Ok(new
+                //{
+                //    messege = "Đăng nhập thành công",
+                //    user.UserName,
+                //    user.DiaChi,
+                //    user.SoDienThoai,
+                //    user.Status,
+                //    user.Roles,
+                //    user.Id,
+                //    user.HoVaTen,
+                //    user.Email,
+                //    user.GioiTinh,
+                //    user.Avatar,
+                //    soluong,
+                //    code = 200,
+
+
+
+           
             }
 
         }
