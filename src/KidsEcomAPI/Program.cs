@@ -9,14 +9,27 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//// Add services to the container.
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowSpecificOrigin",
+//                builder => builder
+//                    .WithOrigins("http://localhost:4200")
+//                    .AllowAnyHeader()
+//                    .AllowAnyMethod());
+//});
 // Add services to the container.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-                builder => builder
-                    .WithOrigins("http://localhost:4200", "http://localhost:55326")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod());
+        policyBuilder => policyBuilder
+            .SetIsOriginAllowed(origin =>
+            {
+                var host = new Uri(origin).Host;
+                return host == "localhost"; //all port
+            })
+            .AllowAnyHeader()
+            .AllowAnyMethod());
 });
 
 //vesion
@@ -74,7 +87,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-       
+        RoleClaimType = "Roles"
     };
 });
 builder.Services.AddControllers();

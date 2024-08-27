@@ -21,7 +21,7 @@ namespace KidsEcomAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCarts()
         {
-            var lst = await _context.Carts.ToListAsync();
+            var lst = await _context.Carts.Take(10).ToListAsync();
             return Ok(lst);
         }
         [ApiVersion("1.0")]
@@ -29,7 +29,7 @@ namespace KidsEcomAPI.Controllers
         public async Task<IActionResult> GetCartsbyUserName(string UserName)
         {
             List<CartInformodel> lstResult = new List<CartInformodel>();
-            var lst =  _context.Carts.Where(x => x.UserName== UserName);
+            var lst =  _context.Carts.Where(x => x.UserName== UserName).OrderByDescending(x=>x.DateTime);
             foreach(var item in lst)
             {
                 CartInformodel data = new CartInformodel();
@@ -42,6 +42,7 @@ namespace KidsEcomAPI.Controllers
                 data.Img = item.Img;
                 data.Soluong = item.Soluong;
                 data.GiaSp = item.GiaSp;
+                
                 lstResult.Add(data);
 
             }
@@ -73,7 +74,9 @@ namespace KidsEcomAPI.Controllers
                     DanhMuc = carts.DanhMuc,
                     GiaSp = carts.GiaSp,
                     Size = carts.Size,
-                    Soluong = carts.Soluong
+                    Soluong = carts.Soluong,
+                    DateTime = DateTime.Now
+
                     
                 };
 
@@ -102,7 +105,9 @@ namespace KidsEcomAPI.Controllers
                     Size = carts.Size,
                     Soluong = carts.Soluong,
                     Email = carts.Email,
-                    subtotal = carts.GiaSp * carts.Soluong
+                    subtotal = carts.GiaSp * carts.Soluong,
+                    DateTime = DateTime.Now
+
                 };
                 await _context.AddAsync(lst);
              

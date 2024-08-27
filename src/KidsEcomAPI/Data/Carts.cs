@@ -21,6 +21,7 @@ namespace KidsEcomAPI.Data
 
             public decimal? subtotal { get; set; }
             public string? Email { get; set; }
+             public DateTime DateTime {  get; set; }
 
-    }
+        }
 }

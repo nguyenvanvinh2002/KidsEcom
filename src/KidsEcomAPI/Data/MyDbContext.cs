@@ -13,7 +13,7 @@ namespace KidsEcomAPI.Data
         public DbSet<DanhGia> DanhGias { get; set; }
         public DbSet<Carts> Carts { get; set; }
         public DbSet<Oders> Oders { get; set; }
-
+        public DbSet<Thongbao> Thongbaos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

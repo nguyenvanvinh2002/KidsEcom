@@ -54,6 +54,7 @@ namespace KidsEcomAPI.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti , Guid.NewGuid().ToString()),
                 new Claim("UserId", user.Id.ToString()),
                 new Claim("UserName", user.UserName),
+                new Claim("Roles",user.Roles)
 
                 };
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

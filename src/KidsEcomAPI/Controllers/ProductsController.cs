@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace KidsEcomAPI.Controllers
 {
@@ -24,12 +25,14 @@ namespace KidsEcomAPI.Controllers
         public async Task<IActionResult> Get() {
 
             var lstproducts = await _context.Products.ToListAsync();
-            return Ok(lstproducts);
+            var random = new Random();
+            var lstrandom = lstproducts.OrderBy(x =>random.Next()).ToList();
+            return Ok(lstrandom);
         
         }
         [ApiVersion("1.0")]
         [HttpGet("{Id:int}")]
-        public async Task<IActionResult> GetProductsbyId(int Id)
+        public async Task<IActionResult> GetProductsbyId(int Id) 
         {
             var lstproducts = await _context.Products.SingleOrDefaultAsync(x=>x.Id==Id);
             return Ok(lstproducts);
@@ -41,30 +44,12 @@ namespace KidsEcomAPI.Controllers
         public async Task<IActionResult> Getcate(string DanhMuc)
         {
 
+
             var lstproducts =  _context.Products.Where(x =>x.DanhMuc  == DanhMuc);
             return Ok(lstproducts);
 
         }
-        //[ApiVersion("1.0")]
-        //[HttpPost]
-        //public async Task<IActionResult> CreateProducts(ProductsModel products) {
-        //    var lstSp = new Products
-        //    {
-        //        TenSp = products.TenSp,
-        //       DanhMuc = products.DanhMuc,
-        //        GiaSp = products.GiaSp,
-        //        Img = products.Img,
-        //        MaSp = products.MaSp,
-        //        Mota = products.Mota,
-        //        GiamGia = products.GiamGia,
-        //        Imgphu = products.Imgphu,
-        //        Imgphu1 = products.Imgphu1
-
-        //    };
-        //  await  _context.AddAsync(lstSp);
-        //   await _context.SaveChangesAsync();
-        //    return Ok("thêm sản phẩm thành công");
-        //}
+        
         [ApiVersion("1.0")]
         [HttpPost]
         public async Task<IActionResult> AddProducts([FromForm] ProductsDTO productsDTO, IFormFile formFile)
@@ -74,17 +59,17 @@ namespace KidsEcomAPI.Controllers
                 var fileName = Path.GetFileNameWithoutExtension(formFile.FileName);
                 var extension = Path.GetExtension(formFile.FileName);
                 var newFileName = $"{fileName}_{Guid.NewGuid()}{extension}";
-                var newFileName1 = $"{fileName}_{Guid.NewGuid()}{extension}";
-                var newFileName2 = $"{fileName}_{Guid.NewGuid()}{extension}";
-                var filePath = Path.Combine(_imgFodelPath, newFileName, newFileName1, newFileName2);
+              
+                var filePath = Path.Combine(_imgFodelPath, newFileName);
                
+
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await formFile.CopyToAsync(stream);
                 }
+                
                 productsDTO.Img = newFileName;
-                productsDTO.Imgphu = newFileName1;
-                productsDTO.Imgphu1 = newFileName2;
+                
             }
             var product = new Products
             {
@@ -94,13 +79,57 @@ namespace KidsEcomAPI.Controllers
                 Mota = productsDTO.Mota,
                 Img= productsDTO.Img,
                 DanhMuc = productsDTO.DanhMuc,
-                Imgphu = productsDTO.Imgphu,
-                Imgphu1 = productsDTO.Imgphu1
+             
                 
             };
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
             return Ok(product);
+        }
+        [ApiVersion("1.0")]
+        [HttpDelete("{Id}")]
+        public async Task<IActionResult> DeleProducts(int Id)
+        {
+            var products = await _context.Products.SingleOrDefaultAsync(x => x.Id == Id);
+            if(products == null)
+            {
+                return Ok("sai");
+            }
+            else
+            {
+                _context.Products.Remove(products);
+              await  _context.SaveChangesAsync();
+                return Ok(new
+                {
+                    messege="xóa thành công",
+                    code=200
+                });
+            }
+        }
+        [ApiVersion("1.0")]
+        [HttpPut("{Id}")]
+        public async Task<IActionResult> updateProducts(int Id,ProductsModel products)
+        {
+            var lst = await _context.Products.FirstOrDefaultAsync(x => x.Id == Id);
+            lst.DanhMuc = products.DanhMuc;
+            lst.TenSp = products.TenSp;
+            lst.Mota = products.Mota;
+            lst.GiamGia = products.GiamGia;
+            lst.GiaSp = products.GiaSp;
+            await _context.SaveChangesAsync();
+            return Ok(new
+            {
+                messege = "cập nhật thành công",
+                code = 200
+            });
+
+        }
+        [ApiVersion("1.0")]
+        [HttpGet("Search")]
+        public async Task<IActionResult> search(string name)
+        {
+            var products = await _context.Products.Where(p => p.TenSp.Contains(name)).ToListAsync();
+            return Ok(products);
         }
 
     }

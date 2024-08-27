@@ -4,10 +4,12 @@ namespace KidsEcomAPI.EnumBase
 {
     public enum Cart_Status
     {
-        [Description("Chưa Thanh Toán")]
+        [Description("Chưa giao hàng")]
         paid = 1,
-        [Description("Đã Thanh Toán")]
+        [Description("Thành công")]
         NotYetPaid = 0,
+        [Description("Lỗi")]
+        Erorrpaid = -2,
         [Description("Chưa Đặt Hàng")]
         NoCarts = -1,
        

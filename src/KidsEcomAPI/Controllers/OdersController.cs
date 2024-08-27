@@ -22,7 +22,8 @@ namespace KidsEcomAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> getodder()
         {
-            var lst = await _context.Oders.ToListAsync();
+            var lst = await _context.Oders.OrderByDescending(o => o.DateTime).ToListAsync();
+            
             var sum = lst.Sum(lst => lst.GiaSp * lst.SoLuong);
             return Ok(new
             {
@@ -35,7 +36,8 @@ namespace KidsEcomAPI.Controllers
         public async Task<IActionResult> GetCartsbyUserName(string UserName)
         {
             List<OdersInfomodel> lstResult = new List<OdersInfomodel>();
-            var lst = _context.Oders.Where(x => x.UserName == UserName);
+            var lst = await _context.Oders.Where(x => x.UserName == UserName)
+            .OrderByDescending(x => x.DateTime).Take(10).ToListAsync();
             foreach (var item in lst)
             {
                 OdersInfomodel data = new OdersInfomodel();
@@ -53,6 +55,7 @@ namespace KidsEcomAPI.Controllers
                 data.Email = item.Email;
                 data.SoDienThoai = item.SoDienThoai;
                 data.DiaChi = item.DiaChi;
+                data.DateTime = DateTime.Now;
                 lstResult.Add(data);
 
             }
@@ -83,9 +86,49 @@ namespace KidsEcomAPI.Controllers
                 await _context.AddAsync(newoder);
                 await _context.SaveChangesAsync();
                 return Ok(newoder);
+
+        }
+        [ApiVersion("1.0")]
+        [HttpGet("Oders/{Status}")]
+        public  IActionResult getoder(int Status)
+        {
+            var lst =  _context.Oders.Where(x => x.Status == Status).ToList();
+            if (lst == null)
+            {
+                return Ok("lỗi");
+            }
+            else
+            {
+                return Ok(new
+                {
+                    lst
+                });
+            }
+        }
+        [ApiVersion("1.0")]
+        [HttpPut("{Id}")]
+        public async Task<IActionResult> updatestatus(int Id,OdersModel oders)
+        {
             
-            
-            
+            var oder = await _context.Oders.FirstOrDefaultAsync(x => x.Id == Id);
+            if(oder.Status == 0)
+            {
+                return Ok(new
+                {
+                    messege="Sai"
+                });
+            }
+            else
+            {
+                oder.Status = oders.Status;
+            }
+           
+            await _context.SaveChangesAsync();
+            return Ok(new
+            {
+                messege="thành công",
+                code=200
+            });
         }
     }
 }

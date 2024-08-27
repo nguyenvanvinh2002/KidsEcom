@@ -70,6 +70,18 @@ namespace KidsEcomAPI.Controllers
                 messege="thành công"
             });
         }
-       
+        [ApiVersion("1.0")]
+        [HttpDelete("{UserName}")]
+        public async Task<IActionResult> removeUser(string UserName)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == UserName);
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return Ok(new
+            {
+                messege = "thành công"
+            });
+        }
+
     }
 }

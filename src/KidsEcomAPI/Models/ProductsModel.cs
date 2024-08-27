@@ -31,8 +31,7 @@ namespace KidsEcomAPI.Models
         public string? Img { get; set; }
         public string Mota { get; set; }
         public string GiamGia { get; set; }
-        public string? Imgphu { get; set; }
-        public string? Imgphu1 { get; set; }
+
 
     }
 }

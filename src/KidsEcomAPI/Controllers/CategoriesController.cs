@@ -1,4 +1,6 @@
 ﻿using KidsEcomAPI.Data;
+using KidsEcomAPI.Models;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,5 +33,6 @@ namespace KidsEcomAPI.Controllers
             return Ok(categories);
 
         }
+        
     }
 }
