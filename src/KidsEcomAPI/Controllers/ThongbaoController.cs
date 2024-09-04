@@ -1,5 +1,6 @@
 ﻿using KidsEcomAPI.Data;
 using KidsEcomAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,8 @@ namespace KidsEcomAPI.Controllers
 
         [ApiVersion("1.0")]
         [HttpPost]
+        [Authorize]
+
         public async Task<IActionResult> Addnotify(ThongbaoModel thongbao)
         {
             var lst = new Thongbao
@@ -40,6 +43,8 @@ namespace KidsEcomAPI.Controllers
 
         [ApiVersion("1.0")]
         [HttpGet]
+   
+
         public async Task<IActionResult> GetallNotify()
         {
             var lst = await _context.Thongbaos.OrderByDescending(x=>x.DateTime).Take(10).ToListAsync();
@@ -47,6 +52,8 @@ namespace KidsEcomAPI.Controllers
         }
         [ApiVersion("1.0")]
         [HttpDelete("{UserName}")]
+        [Authorize]
+
         public async Task<IActionResult> RemoveNotify(string UserName)
         {
             var lst = await _context.Thongbaos.Where(x => x.UserName == UserName).ToListAsync();

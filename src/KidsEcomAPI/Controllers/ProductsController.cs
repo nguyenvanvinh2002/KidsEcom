@@ -3,6 +3,7 @@ using KidsEcomAPI.Data;
 using KidsEcomAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -12,6 +13,7 @@ namespace KidsEcomAPI.Controllers
 
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+
     public class ProductsController : ControllerBase
     {
         private readonly string _imgFodelPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img");
@@ -22,11 +24,28 @@ namespace KidsEcomAPI.Controllers
         }
         [ApiVersion("1.0")]
         [HttpGet]
-        public async Task<IActionResult> Get() {
-
-            var lstproducts = await _context.Products.ToListAsync();
+        public async Task<IActionResult> Get(string? name) { 
+      
             var random = new Random();
-            var lstrandom = lstproducts.OrderBy(x =>random.Next()).ToList();
+       
+            var query = from u in _context.Products select new { u };
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(x => x.u.TenSp.Contains(name));
+            }
+            var lst = await query.Select(u => new Products()
+            {
+                Id = u.u.Id,
+                TenSp = u.u.TenSp,
+                DanhMuc = u.u.DanhMuc,
+                GiamGia = u.u.GiamGia,
+                GiaSp = u.u.GiaSp,
+                Img = u.u.Img,
+                Mota = u.u.Mota,
+                Imgphu = u.u.Imgphu,
+                Imgphu1 = u.u.Imgphu1
+            }).ToListAsync();
+            var lstrandom = lst.OrderBy(x => random.Next()).ToList();
             return Ok(lstrandom);
         
         }
@@ -40,24 +59,22 @@ namespace KidsEcomAPI.Controllers
         }
         [ApiVersion("1.0")]
         [HttpGet("{DanhMuc}")]
-
         public async Task<IActionResult> Getcate(string DanhMuc)
         {
-
-
-            var lstproducts =  _context.Products.Where(x =>x.DanhMuc  == DanhMuc);
+            var lstproducts = await  _context.Products.Where(x =>x.DanhMuc  == DanhMuc).ToListAsync();
             return Ok(lstproducts);
-
         }
         
         [ApiVersion("1.0")]
         [HttpPost]
-        public async Task<IActionResult> AddProducts([FromForm] ProductsDTO productsDTO, IFormFile formFile)
+        [Authorize(Roles = "Admin")]
+
+        public async Task<IActionResult> AddProducts([FromForm] ProductsDTO productsDTO)
         {
-            if(formFile != null && formFile.Length > 0)
+            if(productsDTO.formFile != null && productsDTO.formFile.Length > 0)
             {
-                var fileName = Path.GetFileNameWithoutExtension(formFile.FileName);
-                var extension = Path.GetExtension(formFile.FileName);
+                var fileName = Path.GetFileNameWithoutExtension(productsDTO.formFile.FileName);
+                var extension = Path.GetExtension(productsDTO.formFile.FileName);
                 var newFileName = $"{fileName}_{Guid.NewGuid()}{extension}";
               
                 var filePath = Path.Combine(_imgFodelPath, newFileName);
@@ -65,7 +82,7 @@ namespace KidsEcomAPI.Controllers
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    await formFile.CopyToAsync(stream);
+                    await productsDTO.formFile.CopyToAsync(stream);
                 }
                 
                 productsDTO.Img = newFileName;
@@ -88,6 +105,8 @@ namespace KidsEcomAPI.Controllers
         }
         [ApiVersion("1.0")]
         [HttpDelete("{Id}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> DeleProducts(int Id)
         {
             var products = await _context.Products.SingleOrDefaultAsync(x => x.Id == Id);
@@ -107,11 +126,12 @@ namespace KidsEcomAPI.Controllers
             }
         }
         [ApiVersion("1.0")]
-        [HttpPut("{Id}")]
-        public async Task<IActionResult> updateProducts(int Id,ProductsModel products)
+        [HttpPost("update-products")]
+        [Authorize(Roles = "Admin")]
+
+        public async Task<IActionResult> updateProducts(int Id, [FromBody] ProductsModel products)
         {
             var lst = await _context.Products.FirstOrDefaultAsync(x => x.Id == Id);
-            lst.DanhMuc = products.DanhMuc;
             lst.TenSp = products.TenSp;
             lst.Mota = products.Mota;
             lst.GiamGia = products.GiamGia;
@@ -124,13 +144,7 @@ namespace KidsEcomAPI.Controllers
             });
 
         }
-        [ApiVersion("1.0")]
-        [HttpGet("Search")]
-        public async Task<IActionResult> search(string name)
-        {
-            var products = await _context.Products.Where(p => p.TenSp.Contains(name)).ToListAsync();
-            return Ok(products);
-        }
+       
 
     }
 }

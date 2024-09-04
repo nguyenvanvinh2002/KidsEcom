@@ -3,6 +3,7 @@ using KidsEcomAPI.Data;
 using KidsEcomAPI.EnumBase;
 using KidsEcomAPI.Migrations;
 using KidsEcomAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace KidsEcomAPI.Controllers
 {
     [Route("api/v{vesion:apiVersion}/[controller]")]
     [ApiController]
+
     public class OdersController : ControllerBase
     {
         private readonly MyDbContext _context;
@@ -20,6 +22,8 @@ namespace KidsEcomAPI.Controllers
         }
         [ApiVersion("1.0")]
         [HttpGet]
+      
+
         public async Task<IActionResult> getodder()
         {
             var lst = await _context.Oders.OrderByDescending(o => o.DateTime).ToListAsync();
@@ -33,6 +37,8 @@ namespace KidsEcomAPI.Controllers
         }
         [ApiVersion("1.0")]
         [HttpGet("{UserName}")]
+        
+
         public async Task<IActionResult> GetCartsbyUserName(string UserName)
         {
             List<OdersInfomodel> lstResult = new List<OdersInfomodel>();
@@ -63,6 +69,8 @@ namespace KidsEcomAPI.Controllers
         }
         [ApiVersion("1.0")]
         [HttpPost]
+        [Authorize]
+
         public async Task<IActionResult> AddOders(OdersModel oders)
         {
             var lst = await _context.Oders.FirstOrDefaultAsync(x => x.IdSp == oders.IdSp);
@@ -90,9 +98,11 @@ namespace KidsEcomAPI.Controllers
         }
         [ApiVersion("1.0")]
         [HttpGet("Oders/{Status}")]
-        public  IActionResult getoder(int Status)
+        [Authorize(Roles ="Admin")]
+
+        public async Task<IActionResult> getoder(int Status)
         {
-            var lst =  _context.Oders.Where(x => x.Status == Status).ToList();
+            var lst = await _context.Oders.Where(x => x.Status == Status).OrderByDescending(x => x.DateTime).ToListAsync();
             if (lst == null)
             {
                 return Ok("lỗi");
@@ -107,28 +117,40 @@ namespace KidsEcomAPI.Controllers
         }
         [ApiVersion("1.0")]
         [HttpPut("{Id}")]
-        public async Task<IActionResult> updatestatus(int Id,OdersModel oders)
+        [Authorize(Roles = "Admin")]
+
+        public async Task<IActionResult> updatestatus(int? Id, [FromBody] OdersModel oders)
         {
             
             var oder = await _context.Oders.FirstOrDefaultAsync(x => x.Id == Id);
-            if(oder.Status == 0)
+       
+            //if (oder == null)
+            //{
+            //    return NotFound(new
+            //    {
+            //        message = "Đối tượng không tìm thấy",
+            //        code = 404
+            //    });
+            //}
+
+            if (oder.Status == 0)
             {
-                return Ok(new
+                return BadRequest(new
                 {
-                    messege="Sai"
+                    message = "Trạng thái đã hoàn thành",
+                    code = 400
                 });
             }
             else
             {
                 oder.Status = oders.Status;
+                await _context.SaveChangesAsync();
+                return Ok(new
+                {
+                    messege = "thành công",
+                    code = 200
+                });
             }
-           
-            await _context.SaveChangesAsync();
-            return Ok(new
-            {
-                messege="thành công",
-                code=200
-            });
         }
     }
 }

@@ -30,7 +30,7 @@ namespace KidsEcomAPI.Data
         public int? IdSp { get; set; }
         public string? DiaChi { get; set; }
         public string? SoDienThoai { get; set; }
-        public string Status { get; set; } 
+        public string? Status { get; set; } 
         public string? HoVaTen { get; set; }
         public string? Email { get; set; }
         public string? Size { get; set; }

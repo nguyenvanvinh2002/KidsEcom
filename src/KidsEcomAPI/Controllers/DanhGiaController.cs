@@ -1,14 +1,16 @@
 ﻿    using KidsEcomAPI.Data;
     using KidsEcomAPI.Models;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
 
     namespace KidsEcomAPI.Controllers
     {
         [Route("api/v{version:apiVersion}/[controller]")]
         [ApiController]
-        public class DanhGiaController : ControllerBase
+
+    public class DanhGiaController : ControllerBase
         {
             private readonly MyDbContext _context;
             public DanhGiaController(MyDbContext context)
@@ -27,7 +29,9 @@
             }
             [ApiVersion("1.0")]
             [HttpPost]
-            public async Task<IActionResult> PostDanhGia(DanhGiaModel danhGia)
+        [Authorize]    
+
+        public async Task<IActionResult> PostDanhGia(DanhGiaModel danhGia)
             {
             
                 var lst = new DanhGia

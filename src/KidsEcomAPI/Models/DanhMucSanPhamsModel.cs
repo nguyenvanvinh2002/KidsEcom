@@ -13,4 +13,9 @@ namespace KidsEcomAPI.Models
         public string? Img { get; set; }
 
     }
+    public class DanhMucSanPhamDTO
+    {
+        public string? DanhMuc { get; set; }
+        public string? Img { get; set; }
+    }
 }

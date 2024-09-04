@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Drawing;
 using KidsEcomAPI.Common;
+using Microsoft.AspNetCore.Authorization;
 namespace KidsEcomAPI.Controllers
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+
     public class CartsController : ControllerBase
     {
         private readonly MyDbContext _context;
@@ -19,6 +21,7 @@ namespace KidsEcomAPI.Controllers
         }
         [ApiVersion("1.0")]
         [HttpGet]
+
         public async Task<IActionResult> GetCarts()
         {
             var lst = await _context.Carts.Take(10).ToListAsync();
@@ -26,6 +29,7 @@ namespace KidsEcomAPI.Controllers
         }
         [ApiVersion("1.0")]
         [HttpGet("{UserName}")]
+        
         public async Task<IActionResult> GetCartsbyUserName(string UserName)
         {
             List<CartInformodel> lstResult = new List<CartInformodel>();
@@ -52,6 +56,7 @@ namespace KidsEcomAPI.Controllers
         }
         [ApiVersion("1.0")]
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddCarts(CartsModel carts)
         {
             var checkcart = await _context.Carts.FirstOrDefaultAsync(c => c.IdSp == carts.IdSp && c.UserName == carts.UserName && c.Size==carts.Size);
@@ -88,6 +93,7 @@ namespace KidsEcomAPI.Controllers
         }
         [ApiVersion("1.0")]
         [HttpPost("ByCart")]
+        [Authorize]
         public async Task<IActionResult> ByCart(CartsModel carts)
         {
             var checkcart = await _context.Carts.FirstOrDefaultAsync(c => c.IdSp == carts.IdSp );
@@ -116,6 +122,7 @@ namespace KidsEcomAPI.Controllers
         }
         [ApiVersion("1.0")]
         [HttpDelete("{IdSp}/{Size}/{UserName}")]
+        [Authorize]
         public async Task<IActionResult> DeleteCartByIdAndSize(int IdSp, string Size,string UserName)
         {
         

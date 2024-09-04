@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 //{
 //    options.AddPolicy("AllowSpecificOrigin",
 //                builder => builder
-//                    .WithOrigins("http://localhost:4200")
+//                    .WithOrigins("/*http://localhost:4200*/")
 //                    .AllowAnyHeader()
 //                    .AllowAnyMethod());
 //});
@@ -90,6 +90,10 @@ builder.Services.AddAuthentication(options =>
         RoleClaimType = "Roles"
     };
 });
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+//});
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

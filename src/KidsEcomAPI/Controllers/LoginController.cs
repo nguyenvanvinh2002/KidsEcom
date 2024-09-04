@@ -1,6 +1,7 @@
 ﻿using KidsEcomAPI.Apikey;
 using KidsEcomAPI.Data;
 using KidsEcomAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ namespace KidsEcomAPI.Controllers
             _configuration = configuration;
 
         }
+     
         [HttpPost]
         public async Task<IActionResult> Login(UsersModel acc)
         {
@@ -63,7 +65,7 @@ namespace KidsEcomAPI.Controllers
                      _configuration["Jwt:Issuer"],
                      _configuration["Jwt:Audience"],
                      claims,
-                     expires: DateTime.UtcNow.AddMinutes(60),
+                     expires: DateTime.UtcNow.AddDays(7),
                      signingCredentials: Login
                     );
                 string tokenvalue = new JwtSecurityTokenHandler().WriteToken(token);
@@ -87,22 +89,7 @@ namespace KidsEcomAPI.Controllers
 
                 });
 
-                //return Ok(new
-                //{
-                //    messege = "Đăng nhập thành công",
-                //    user.UserName,
-                //    user.DiaChi,
-                //    user.SoDienThoai,
-                //    user.Status,
-                //    user.Roles,
-                //    user.Id,
-                //    user.HoVaTen,
-                //    user.Email,
-                //    user.GioiTinh,
-                //    user.Avatar,
-                //    soluong,
-                //    code = 200,
-
+             
 
 
            
